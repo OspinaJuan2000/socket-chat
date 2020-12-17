@@ -13,16 +13,16 @@ const user = {
 }
 
 socket.on('connect', () => {
-    socket.emit('enterChat', user, (resp) => {
-        console.log(resp);
+    socket.emit('enterChat', user, (data) => {
+        renderInfoUsers(data);
     });
 
     socket.on('sendMessage', (data) => {
-        console.log(data);
+        renderMessages(data, false);
     });
 
-    socket.on('loadActiveUsers', (data) => {
-        console.log(data);
+    socket.on('controlUsers', (data) => {
+        renderInfoUsers(data);
     });
 
     // PRIVATE MESSAGES.

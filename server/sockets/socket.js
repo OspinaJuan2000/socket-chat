@@ -28,14 +28,20 @@ socket.on('connection', (client) => {
 
         callback(users.getUsersByRoom(data.room));
 
-        client.broadcast.to(data.room).emit('loadActiveUsers', users.getUsersByRoom(data.room));
+        client.broadcast.to(data.room).emit('controlUsers', users.getUsersByRoom(data.room));
+
+        client.broadcast.to(data.room).emit('sendMessage', sendMessage('Administrator', `${data.name} is online`));
     });
 
-    client.on('sendMessage', (data) => {
+    client.on('sendMessage', (data, callback) => {
 
         const user = users.getUserById(client.id);
 
-        client.broadcast.to(user.room).emit('sendMessage', sendMessage(user.name, data.message));
+        const message = sendMessage(user.name, data.message);
+
+        client.broadcast.to(user.room).emit('sendMessage', message);
+
+        callback(message);
     });
 
     // PRIVATE MESSAGES.
@@ -51,6 +57,6 @@ socket.on('connection', (client) => {
 
         client.broadcast.to(userDisconnected.room).emit('sendMessage', sendMessage('Administrator', `${userDisconnected.name} is offline`));
 
-        client.broadcast.to(userDisconnected.room).emit('loadActiveUsers', users.getUsersByRoom(userDisconnected.room));
+        client.broadcast.to(userDisconnected.room).emit('controlUsers', users.getUsersByRoom(userDisconnected.room));
     });
 });
